@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Redação</title>
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Redação">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#1f3a5f; --azul-claro:#e8eef6; --tinta:#1d2430; --cinza:#5b6472; --cinza2:#8a92a0;
+  --linha:#e6e9ee; --fundo:#f6f7f9; --branco:#fff; --erro:#b4413c; --ok:#2f7a4f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Inter,-apple-system,system-ui,sans-serif;font-size:13px;color:var(--tinta);background:var(--branco);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.hide{display:none!important}
+
+/* topo */
+.topo{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--linha);background:var(--branco);position:sticky;top:0;z-index:5}
+.marca{font-weight:600;color:var(--azul);font-size:14px;letter-spacing:-.1px}
+.nav{display:flex;gap:2px}
+.nav button{padding:6px 10px;border-radius:6px;color:var(--cinza);font-size:12.5px}
+.nav button:hover{background:var(--fundo);color:var(--tinta)}
+
+/* layout C */
+.app{display:flex;min-height:calc(100vh - 52px)}
+.form{width:384px;flex:none;border-right:1px solid var(--linha);padding:18px 20px 28px;overflow:auto}
+.folha{flex:1;background:var(--fundo);padding:24px 28px 40px;min-width:0}
+.rot{font-size:11px;color:var(--cinza);margin:14px 0 5px;display:flex;justify-content:space-between;align-items:center}
+.rot:first-child{margin-top:0}
+.rot a{color:var(--azul);font-weight:500;cursor:pointer}
+.campo{width:100%;border:1px solid #dfe3e9;border-radius:7px;padding:8px 10px;background:var(--branco);outline:none;transition:border .15s}
+.campo:focus{border-color:#9fb2cc}
+textarea.campo{resize:vertical;min-height:96px;line-height:1.5}
+select.campo{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8a92a0 50%),linear-gradient(135deg,#8a92a0 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:28px}
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button{padding:5px 9px;border-radius:6px;background:var(--fundo);color:var(--cinza);font-size:12px;white-space:nowrap}
+.seg button.on{background:var(--azul);color:#fff}
+.linha2{display:flex;gap:8px}
+.linha2>*{flex:1}
+
+.anexar{display:flex;gap:6px}
+.anexar label{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed #cfd6df;border-radius:7px;padding:9px 6px;color:var(--azul);font-weight:500;font-size:12px;cursor:pointer;background:var(--branco)}
+.anexar label:hover{background:var(--azul-claro)}
+.anexar input{display:none}
+.arqs{margin-top:6px;max-height:210px;overflow:auto}
+.arq{display:flex;align-items:center;gap:8px;padding:5px 2px;border-bottom:1px solid #f1f3f5}
+.arq input{accent-color:var(--azul);width:14px;height:14px;flex:none}
+.arq .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arq .t{font-size:10.5px;color:var(--cinza2);flex:none}
+.arq .x{color:var(--cinza2);font-size:15px;line-height:1;padding:0 4px}
+.arq .x:hover{color:var(--erro)}
+.ic{width:10px;height:12px;border:1.3px solid #c0504d;border-radius:2px;flex:none}
+.ic.img{border-color:#4a7bb7;border-radius:2px}
+.vazio{color:var(--cinza2);font-size:12px;padding:6px 0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--azul);color:#fff;border-radius:7px;padding:8px 14px;font-weight:500;font-size:12.5px}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.l{background:var(--branco);color:var(--azul);border:1px solid #d3dbe6}
+.btn.g{width:100%;padding:10px;margin-top:16px;font-size:13px}
+.dica{font-size:11px;color:var(--cinza2);margin-top:5px;line-height:1.45}
+
+/* folha */
+.papel{max-width:760px;margin:0 auto}
+.doc{background:var(--branco);border:1px solid var(--linha);border-radius:10px;min-height:420px;position:relative;scroll-margin-top:66px}
+.doc textarea{width:100%;min-height:420px;border:0;outline:none;resize:none;padding:34px 40px;background:transparent;font-size:13.5px;line-height:1.65;color:#232a36;white-space:pre-wrap;font-family:Inter,sans-serif}
+.doc .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--cinza2);text-align:center;gap:6px;padding:20px;pointer-events:none}
+.doc .placeholder b{color:var(--cinza);font-weight:500}
+.acoes{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.btn.copiar{padding:10px 22px;font-size:13.5px}
+.btn.copiar.feito{background:var(--ok)}
+.meta{font-size:11px;color:var(--cinza2);margin-left:auto}
+.ajuste{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid #dde2e9;border-radius:20px;padding:4px 10px;font-size:11.5px;color:var(--cinza);background:var(--branco)}
+.chip:hover{border-color:var(--azul);color:var(--azul)}
+.ajuste input{flex:1;min-width:180px}
+.carregando{position:absolute;inset:0;background:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;border-radius:10px;color:var(--cinza);z-index:2}
+.spin{width:22px;height:22px;border:2px solid var(--azul-claro);border-top-color:var(--azul);border-radius:50%;animation:g .8s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+
+.hist{margin-top:28px}
+.hist h3{font-size:12px;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between}
+.hist h3 span{font-weight:400;color:var(--cinza2)}
+.hi{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:7px;cursor:pointer}
+.hi:hover{background:var(--branco)}
+.hi.on{background:var(--branco);box-shadow:inset 2px 0 0 var(--azul)}
+.hi .tt{flex:1;min-width:0}
+.hi .tt div:first-child{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hi .tt div:last-child{font-size:11px;color:var(--cinza2);margin-top:1px}
+.tag{font-size:10.5px;padding:2px 7px;border-radius:4px;background:var(--azul-claro);color:var(--azul);white-space:nowrap}
+.hi .cp{color:var(--azul);font-size:11.5px;font-weight:500;padding:3px 6px;border-radius:5px}
+.hi .cp:hover{background:var(--azul-claro)}
+
+/* modais */
+.fundo-modal{position:fixed;inset:0;background:rgba(20,28,40,.32);display:flex;align-items:flex-start;justify-content:center;padding:60px 16px;z-index:20;overflow:auto}
+.modal{background:var(--branco);border-radius:12px;width:100%;max-width:640px;padding:22px 24px 24px;box-shadow:0 10px 40px rgba(0,0,0,.15)}
+.modal.p{max-width:420px}
+.modal h2{font-size:15px;font-weight:600;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.modal h2 button{color:var(--cinza2);font-size:20px;font-weight:400;line-height:1}
+.modal .sub{color:var(--cinza);font-size:12px;margin-bottom:14px;line-height:1.5}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--linha);margin:10px 0 4px;overflow-x:auto}
+.tabs button{padding:8px 10px;color:var(--cinza);font-size:12.5px;border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--azul);border-bottom-color:var(--azul);font-weight:500}
+.modal textarea.campo{min-height:150px;font-size:12.5px}
+.modal .rodape{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;align-items:center}
+.modal .rodape .ok{color:var(--ok);font-size:12px;margin-right:auto}
+.arvore .pi{display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid #f2f4f6}
+.arvore .pi .n{flex:1}
+.arvore .pi button{color:var(--cinza2);font-size:11.5px;padding:2px 6px;border-radius:5px}
+.arvore .pi button:hover{background:var(--fundo);color:var(--tinta)}
+
+/* login */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--fundo);padding:20px}
+.login .caixa{background:var(--branco);border:1px solid var(--linha);border-radius:12px;padding:30px 28px;width:100%;max-width:360px}
+.login h1{font-size:18px;color:var(--azul);font-weight:600}
+.login p{color:var(--cinza);font-size:12.5px;margin:4px 0 18px;line-height:1.5}
+.login .btn{width:100%;margin-top:16px;padding:10px}
+.login .troca{text-align:center;margin-top:12px;font-size:12px;color:var(--cinza)}
+.login .troca a{color:var(--azul);cursor:pointer;font-weight:500}
+.msg{font-size:12px;margin-top:10px;line-height:1.45}
+.msg.e{color:var(--erro)} .msg.s{color:var(--ok)}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--tinta);color:#fff;padding:9px 16px;border-radius:8px;font-size:12.5px;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90vw;text-align:center}
+.toast.v{opacity:1;transform:translateX(-50%)}
+.toast.e{background:var(--erro)}
+
+/* barra fixa de copiar no celular */
+.barra-copiar{display:none}
+
+@media (max-width:820px){
+  .app{flex-direction:column}
+  .form{width:auto;border-right:0;border-bottom:1px solid var(--linha);padding:16px}
+  .folha{padding:16px 12px 100px}
+  .doc textarea{padding:22px 18px;font-size:14px;min-height:340px}
+  .doc{min-height:340px}
+  .topo{padding:0 12px}
+  .nav button{padding:6px 7px}
+  .campo{font-size:16px} /* evita zoom no iPhone */
+  .barra-copiar{display:flex;position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);border-top:1px solid var(--linha);gap:8px;z-index:10;backdrop-filter:blur(8px)}
+  .barra-copiar .btn{flex:1;padding:12px;font-size:14px}
+  .barra-copiar .btn.l{flex:none}
+  .acoes .copiar,.acoes #mostrarAjuste{display:none}
+  .fundo-modal{padding:20px 10px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="telaLogin" class="login hide">
+  <div class="caixa">
+    <h1>Redação</h1>
+    <p id="loginTexto">Entre para escrever seus ofícios, e-mails e mensagens.</p>
+    <div class="rot">E-mail</div>
+    <input id="lEmail" class="campo" type="email" autocomplete="email">
+    <div class="rot">Senha</div>
+    <input id="lSenha" class="campo" type="password" autocomplete="current-password">
+    <button id="lBtn" class="btn">Entrar</button>
+    <div id="lMsg" class="msg"></div>
+    <div class="troca"><span id="lTrocaTxt">Primeira vez?</span> <a id="lTroca">Criar conta</a></div>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="telaApp" class="hide">
+  <header class="topo">
+    <div class="marca">Redação</div>
+    <nav class="nav">
+      <button id="bPastas">Pastas</button>
+      <button id="bModelos">Meus modelos</button>
+      <button id="bSair">Sair</button>
+    </nav>
+  </header>
+
+  <main class="app">
+    <aside class="form">
+      <div class="rot">Tipo</div>
+      <div class="seg" id="tipos">
+        <button data-t="oficio_interno">Of. interno</button>
+        <button data-t="oficio_externo">Of. externo</button>
+        <button data-t="email">E-mail</button>
+        <button data-t="whatsapp">WhatsApp</button>
+        <button data-t="livre">Livre</button>
+      </div>
+
+      <div class="rot">Pasta <a id="novaPastaLink">+ nova pasta</a></div>
+      <select id="pasta" class="campo"></select>
+
+      <div class="linha2" id="linhaNumero">
+        <div><div class="rot">Nº do ofício</div><input id="numero" class="campo" inputmode="numeric"></div>
+        <div style="flex:2"><div class="rot">Destinatário</div><input id="destinatario" class="campo" placeholder="Ex.: Empresa Alfa Ltda."></div>
+      </div>
+      <div id="linhaDest" class="hide"><div class="rot">Para quem</div><input id="destinatario2" class="campo" placeholder="Ex.: João, do financeiro"></div>
+
+      <div class="rot">O que precisa dizer</div>
+      <textarea id="pedido" class="campo" placeholder="Ex.: notificar a empresa sobre o atraso na entrega da 2ª etapa, com prazo de 5 dias úteis para regularizar."></textarea>
+
+      <div class="rot">Fotos e PDFs para a IA ler <span id="contSel" style="color:var(--cinza2)"></span></div>
+      <div class="anexar">
+        <label>📷 Câmera<input id="inCamera" type="file" accept="image/*" capture="environment"></label>
+        <label>＋ Fotos ou arquivos<input id="inArquivos" type="file" accept="image/*,application/pdf,.pdf,.txt" multiple></label>
+      </div>
+      <div id="arqs" class="arqs"></div>
+
+      <div class="rot">Qualidade</div>
+      <div class="seg" id="qualidade">
+        <button data-q="rapido">Rápido</button>
+        <button data-q="caprichado">Caprichado</button>
+      </div>
+      <div class="dica" id="dicaQual"></div>
+
+      <button id="gerar" class="btn g">Gerar texto</button>
+    </aside>
+
+    <section class="folha">
+      <div class="papel">
+        <div class="doc" id="doc">
+          <textarea id="texto" spellcheck="true"></textarea>
+          <div class="placeholder" id="vazioDoc"><b>Seu texto aparece aqui</b>Preencha à esquerda e toque em Gerar texto.<br>Depois é só copiar e colar onde precisar.</div>
+          <div class="carregando hide" id="carregando"><div class="spin"></div><span id="carregandoTxt">Lendo os anexos e escrevendo…</span></div>
+        </div>
+        <div class="acoes" id="acoes">
+          <button class="btn copiar" id="copiar">Copiar texto</button>
+          <button class="btn l" id="mostrarAjuste">Ajustar</button>
+          <button class="btn l" id="novo">Novo</button>
+          <span class="meta" id="meta"></span>
+        </div>
+        <div class="ajuste hide" id="ajuste">
+          <button class="chip" data-a="Deixe mais curto e direto.">Mais curto</button>
+          <button class="chip" data-a="Deixe mais formal.">Mais formal</button>
+          <button class="chip" data-a="Deixe o tom mais firme, sem ser grosseiro.">Mais firme</button>
+          <button class="chip" data-a="Deixe mais simples e cordial.">Mais simples</button>
+          <input id="ajusteTxt" class="campo" placeholder="Ou diga o que mudar…">
+          <button class="btn" id="aplicarAjuste">Aplicar</button>
+        </div>
+
+        <div class="hist">
+          <h3>Textos desta pasta <span id="histCont"></span></h3>
+          <div id="historico"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="barra-copiar hide" id="barraCopiar">
+    <button class="btn" id="copiar2">Copiar texto</button>
+    <button class="btn l" id="ajustar2">Ajustar</button>
+  </div>
+</section>
+
+<!-- MODAL MODELOS -->
+<div class="fundo-modal hide" id="mModelos">
+  <div class="modal">
+    <h2>Meus modelos <button data-fecha>×</button></h2>
+    <div class="sub">Ensine uma vez e a IA segue sempre. Cole um exemplo real em cada tipo; é o que mais melhora o resultado.</div>
+    <div class="tabs" id="tabsModelos">
+      <button data-m="dados">Meus dados</button>
+      <button data-m="oficio_interno">Ofício interno</button>
+      <button data-m="oficio_externo">Ofício externo</button>
+      <button data-m="email">E-mail</button>
+      <button data-m="whatsapp">WhatsApp</button>
+      <button data-m="livre">Livre</button>
+    </div>
+    <div id="painelDados">
+      <div class="linha2"><div><div class="rot">Nome</div><input class="campo" data-c="nome"></div><div><div class="rot">Cargo</div><input class="campo" data-c="cargo"></div></div>
+      <div class="linha2"><div><div class="rot">Órgão ou empresa</div><input class="campo" data-c="orgao"></div><div><div class="rot">Setor (sigla)</div><input class="campo" data-c="setor"></div></div>
+      <div class="linha2"><div><div class="rot">Cidade</div><input class="campo" data-c="cidade" placeholder="São Paulo"></div><div><div class="rot">Contato (telefone/e-mail)</div><input class="campo" data-c="contato"></div></div>
+      <div class="linha2"><div><div class="rot">Próximo nº ofício interno</div><input class="campo" data-c="prox_oficio_interno" inputmode="numeric"></div><div><div class="rot">Próximo nº ofício externo</div><input class="campo" data-c="prox_oficio_externo" inputmode="numeric"></div></div>
+      <div class="rot">Regras que valem para tudo</div>
+      <textarea class="campo" data-c="regras_gerais" placeholder="Ex.: nunca usar 'venho por meio deste'; sempre tratar empresas por 'Prezados Senhores'."></textarea>
+    </div>
+    <div id="painelModelo" class="hide">
+      <div class="rot">Como escrever este tipo</div>
+      <textarea class="campo" id="mInstr"></textarea>
+      <div class="rot">Exemplo real (cole um texto seu que está no padrão certo)</div>
+      <textarea class="campo" id="mExemplo" placeholder="Cole aqui um ofício, e-mail ou mensagem que você considera o modelo ideal. Pode trocar nomes e números."></textarea>
+      <div class="dica"><a id="restaurar" style="color:var(--azul);cursor:pointer">Restaurar instruções padrão</a></div>
+    </div>
+    <div class="rodape"><span class="ok" id="mOk"></span><button class="btn l" data-fecha>Fechar</button><button class="btn" id="mSalvar">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL PASTAS -->
+<div class="fundo-modal hide" id="mPastas">
+  <div class="modal">
+    <h2>Pastas <button data-fecha>×</button></h2>
+    <div class="sub">Organize por assunto, com subpastas. Ex.: Notificações Empresas › Contrato nº 009.</div>
+    <div class="arvore" id="arvore"></div>
+    <div class="rodape"><button class="btn" id="pNova">+ Nova pasta</button></div>
+  </div>
+</div>
+
+<!-- MODAL NOVA PASTA -->
+<div class="fundo-modal hide" id="mNova">
+  <div class="modal p">
+    <h2 id="novaTitulo">Nova pasta <button data-fecha>×</button></h2>
+    <div class="rot">Nome</div>
+    <input id="nNome" class="campo" placeholder="Ex.: Contrato nº 009">
+    <div id="nDentroBox"><div class="rot">Dentro de</div><select id="nDentro" class="campo"></select></div>
+    <div class="rodape"><button class="btn l" data-fecha>Cancelar</button><button class="btn" id="nSalvar">Criar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SB_URL = "https://exfyhevmtpuxnmaifcuw.supabase.co";
+const SB_KEY = "sb_publishable__zDdXmcKTU1i9iJe50XqHg_0IwR-sdL";
+const sb = createClient(SB_URL, SB_KEY);
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const ls = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+
+const NOMES = { oficio_interno: "Ofício interno", oficio_externo: "Ofício externo", email: "E-mail", whatsapp: "WhatsApp", livre: "Livre" };
+const PADRAO = {
+  oficio_interno: `Comunicação formal entre setores do mesmo órgão/empresa.
+Estrutura, nesta ordem:
+1. "OFÍCIO INTERNO Nº [número]/[ano] – [sigla do setor]" (alinhado à esquerda)
+2. Local e data por extenso: "[Cidade], [dia] de [mês] de [ano]."
+3. "Para: [setor/pessoa e cargo]"
+4. "Assunto: [resumo em uma linha]"
+5. Vocativo curto ("Prezado(a) Senhor(a)," ou "Prezado(a) [cargo],").
+6. Texto em 2 a 4 parágrafos curtos: contexto, o que se pede ou informa, prazo se houver.
+7. Fecho: "Atenciosamente,"
+8. Assinatura: nome, cargo e setor.
+Tom: cordial, objetivo, sem rodeios. Evite "venho por meio deste".`,
+  oficio_externo: `Comunicação oficial para outros órgãos, empresas ou pessoas de fora.
+Estrutura, nesta ordem:
+1. "OFÍCIO Nº [número]/[ano] – [sigla do setor]" (alinhado à esquerda)
+2. Local e data por extenso: "[Cidade], [dia] de [mês] de [ano]."
+3. Destinatário: forma de tratamento + nome + cargo + órgão/empresa (ex.: "À Senhora / Fulana de Tal / Diretora / Empresa X"). Para empresas: "À [Razão Social]".
+4. "Assunto: [resumo em uma linha]"
+5. Vocativo: "Senhor(a) [Cargo]," para autoridades; "Prezados Senhores," para empresas.
+6. Texto em parágrafos objetivos: (a) contexto e referência a documentos, contrato e cláusulas; (b) desenvolvimento; (c) pedido, determinação ou notificação com prazo claro.
+7. Fecho: "Respeitosamente," para autoridade de hierarquia superior; "Atenciosamente," nos demais casos.
+8. Assinatura: nome, cargo, órgão.
+Use pronomes de tratamento corretos (Vossa Senhoria; Vossa Excelência para altas autoridades). Linguagem formal, impessoal e clara.`,
+  email: `E-mail profissional.
+Estrutura:
+1. Primeira linha: "Assunto: [assunto claro e específico]", depois uma linha em branco.
+2. Saudação: "Prezado(a) [nome]," (formal) ou "Olá, [nome]," (mais próximo).
+3. Corpo em parágrafos curtos: o motivo logo no primeiro parágrafo, depois detalhes e o que se espera, com prazo se houver.
+4. Fecho: "Atenciosamente," (ou "Obrigada," quando for pedido simples).
+5. Assinatura: nome, cargo, órgão/empresa e contato.
+Tom: cordial e objetivo.`,
+  whatsapp: `Mensagem de WhatsApp profissional.
+- Curta: no máximo 5 a 6 linhas.
+- Comece com saudação simples ("Bom dia, [nome]!" ou "Oi, [nome], tudo bem?").
+- Vá direto ao ponto; uma ideia por linha ou parágrafo curto.
+- Se houver prazo, data ou horário, deixe explícito.
+- Sem assinatura formal e sem "Atenciosamente".
+- Tom cordial e educado, nem formal demais nem íntimo demais.`,
+  livre: `Siga exatamente o que for pedido (resumo, resposta, parecer, lista, explicação etc.).
+Se houver fotos ou PDFs, leia tudo antes e use as informações relevantes.
+Formato limpo, pronto para copiar e colar, sem Markdown.`,
+};
+
+let user = null, cfg = {}, modelos = {}, pastas = [], arquivos = [], textos = [];
+let tipo = ls.get("red_tipo") || "oficio_externo";
+let qualidade = ls.get("red_qual") || "rapido";
+let pastaId = ls.get("red_pasta") || "";
+let selecionados = new Set();
+let atual = null; // texto aberto {id, tipo, pedido, ...}
+
+/* ---------- utilidades ---------- */
+let tTimer;
+function toast(m, erro = false) {
+  const t = $("toast"); t.textContent = m; t.className = "toast v" + (erro ? " e" : "");
+  clearTimeout(tTimer); tTimer = setTimeout(() => (t.className = "toast"), erro ? 5000 : 1800);
+}
+function dataCurta(d) { return new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", ""); }
+function tamanho(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB"; }
+function abrir(id) { $(id).classList.remove("hide"); }
+function fechar(id) { $(id).classList.add("hide"); }
+document.querySelectorAll(".fundo-modal").forEach((m) => {
+  m.addEventListener("click", (e) => { if (e.target === m || e.target.hasAttribute("data-fecha")) m.classList.add("hide"); });
+});
+
+/* ---------- login ---------- */
+let modoCriar = false;
+$("lTroca").onclick = () => {
+  modoCriar = !modoCriar;
+  $("lBtn").textContent = modoCriar ? "Criar conta" : "Entrar";
+  $("lTrocaTxt").textContent = modoCriar ? "Já tem conta?" : "Primeira vez?";
+  $("lTroca").textContent = modoCriar ? "Entrar" : "Criar conta";
+  $("lSenha").autocomplete = modoCriar ? "new-password" : "current-password";
+  $("lMsg").textContent = "";
+};
+$("lBtn").onclick = async () => {
+  const email = $("lEmail").value.trim(), password = $("lSenha").value;
+  const msg = $("lMsg"); msg.className = "msg";
+  if (!email || password.length < 6) { msg.className = "msg e"; msg.textContent = "Informe e-mail e uma senha com pelo menos 6 caracteres."; return; }
+  $("lBtn").disabled = true;
+  if (modoCriar) {
+    const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } });
+    $("lBtn").disabled = false;
+    if (error) { msg.className = "msg e"; msg.textContent = traduzErro(error.message); return; }
+    if (data.session) return iniciar(data.session);
+    msg.className = "msg s"; msg.textContent = "Conta criada. Confirme pelo link enviado ao seu e-mail e depois entre aqui.";
+    $("lTroca").click();
+  } else {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    $("lBtn").disabled = false;
+    if (error) { msg.className = "msg e"; msg.textContent = traduzErro(error.message); return; }
+    iniciar(data.session);
+  }
+};
+$("lSenha").addEventListener("keydown", (e) => { if (e.key === "Enter") $("lBtn").click(); });
+function traduzErro(m) {
+  if (/Invalid login/i.test(m)) return "E-mail ou senha incorretos.";
+  if (/not confirmed/i.test(m)) return "Seu e-mail ainda não foi confirmado.";
+  if (/already registered/i.test(m)) return "Esse e-mail já tem conta. Use Entrar.";
+  return m;
+}
+$("bSair").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+/* ---------- carregar ---------- */
+async function iniciar(session) {
+  if (user) return;
+  user = session.user;
+  $("telaLogin").classList.add("hide"); $("telaApp").classList.remove("hide");
+  let { data: c } = await sb.from("red_config").select("*").maybeSingle();
+  if (!c) { const r = await sb.from("red_config").insert({}).select().single(); c = r.data; }
+  cfg = c || {};
+  const { data: ms } = await sb.from("red_modelos").select("*");
+  modelos = Object.fromEntries((ms || []).map((m) => [m.tipo, m]));
+  const faltam = Object.keys(PADRAO).filter((t) => !modelos[t]).map((t) => ({ tipo: t, instrucoes: PADRAO[t], exemplo: "" }));
+  if (faltam.length) {
+    const { data } = await sb.from("red_modelos").insert(faltam).select();
+    (data || []).forEach((m) => (modelos[m.tipo] = m));
+  }
+  await carregarPastas();
+  renderTipo(); renderQualidade();
+  await carregarPasta();
+}
+
+async function carregarPastas() {
+  const { data } = await sb.from("red_pastas").select("*").order("nome");
+  pastas = data || [];
+  if (pastaId && !pastas.find((p) => p.id === pastaId)) pastaId = "";
+  renderSelectPastas();
+}
+function arvoreOrdenada() {
+  const out = [];
+  const filhos = (pid) => pastas.filter((p) => (p.parent_id || "") === (pid || "")).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR", { numeric: true }));
+  const anda = (pid, nivel) => filhos(pid).forEach((p) => { out.push({ ...p, nivel }); anda(p.id, nivel + 1); });
+  anda("", 0);
+  return out;
+}
+function caminho(id) {
+  const partes = []; let p = pastas.find((x) => x.id === id);
+  while (p) { partes.unshift(p.nome); p = pastas.find((x) => x.id === p.parent_id); }
+  return partes.join(" › ");
+}
+function renderSelectPastas() {
+  const opts = ['<option value="">Sem pasta</option>'].concat(
+    arvoreOrdenada().map((p) => `<option value="${p.id}">${" ".repeat(p.nivel)}${p.nivel ? "› " : ""}${esc(p.nome)}</option>`)
+  );
+  $("pasta").innerHTML = opts.join("");
+  $("pasta").value = pastaId;
+}
+$("pasta").onchange = async () => { pastaId = $("pasta").value; ls.set("red_pasta", pastaId); novo(); await carregarPasta(); };
+
+async function carregarPasta() {
+  const qa = sb.from("red_arquivos").select("*").order("created_at", { ascending: false });
+  const qt = sb.from("red_textos").select("*").order("created_at", { ascending: false }).limit(100);
+  const [{ data: a }, { data: t }] = await Promise.all([
+    pastaId ? qa.eq("pasta_id", pastaId) : qa.is("pasta_id", null),
+    pastaId ? qt.eq("pasta_id", pastaId) : qt.is("pasta_id", null),
+  ]);
+  arquivos = a || []; textos = t || [];
+  selecionados = new Set([...selecionados].filter((id) => arquivos.some((x) => x.id === id)));
+  renderArquivos(); renderHistorico();
+}
+
+/* ---------- tipo / qualidade ---------- */
+function renderTipo() {
+  document.querySelectorAll("#tipos button").forEach((b) => b.classList.toggle("on", b.dataset.t === tipo));
+  const ehOficio = tipo.startsWith("oficio");
+  $("linhaNumero").classList.toggle("hide", !ehOficio);
+  $("linhaDest").classList.toggle("hide", ehOficio);
+  if (ehOficio) {
+    const n = tipo === "oficio_interno" ? cfg.prox_oficio_interno : cfg.prox_oficio_externo;
+    $("numero").value = n ?? 1;
+  }
+}
+document.querySelectorAll("#tipos button").forEach((b) => (b.onclick = () => {
+  const destAntes = tipo.startsWith("oficio") ? $("destinatario").value : $("destinatario2").value;
+  tipo = b.dataset.t; ls.set("red_tipo", tipo); renderTipo();
+  (tipo.startsWith("oficio") ? $("destinatario") : $("destinatario2")).value = destAntes;
+}));
+function renderQualidade() {
+  document.querySelectorAll("#qualidade button").forEach((b) => b.classList.toggle("on", b.dataset.q === qualidade));
+  $("dicaQual").textContent = qualidade === "rapido"
+    ? "Usa o Gemini Flash-Lite: bom para o dia a dia e com limite grátis bem maior."
+    : "Usa o Gemini Flash: escreve melhor, mas o limite grátis é pequeno (cerca de 20 por dia). Se acabar, cai sozinho para o Rápido.";
+}
+document.querySelectorAll("#qualidade button").forEach((b) => (b.onclick = () => { qualidade = b.dataset.q; ls.set("red_qual", qualidade); renderQualidade(); }));
+
+/* ---------- arquivos ---------- */
+function renderArquivos() {
+  $("arqs").innerHTML = arquivos.length
+    ? arquivos.map((a) => `<label class="arq"><input type="checkbox" data-id="${a.id}" ${selecionados.has(a.id) ? "checked" : ""}>
+        <span class="ic ${a.mime.startsWith("image") ? "img" : ""}"></span><span class="n" title="${esc(a.nome)}">${esc(a.nome)}</span>
+        <span class="t">${a.tamanho ? tamanho(a.tamanho) : ""}</span><button class="x" data-del="${a.id}" title="Remover">×</button></label>`).join("")
+    : `<div class="vazio">Nenhum arquivo nesta pasta ainda. Os que você anexar ficam guardados aqui.</div>`;
+  $("contSel").textContent = selecionados.size ? `· ${selecionados.size} marcado${selecionados.size > 1 ? "s" : ""}` : "";
+  $("arqs").querySelectorAll("input[type=checkbox]").forEach((c) => (c.onchange = () => {
+    c.checked ? selecionados.add(c.dataset.id) : selecionados.delete(c.dataset.id); renderArquivos();
+  }));
+  $("arqs").querySelectorAll("[data-del]").forEach((b) => (b.onclick = async (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const a = arquivos.find((x) => x.id === b.dataset.del);
+    if (!confirm(`Remover "${a.nome}" desta pasta?`)) return;
+    await sb.storage.from("redacao").remove([a.caminho]);
+    await sb.from("red_arquivos").delete().eq("id", a.id);
+    selecionados.delete(a.id); await carregarPasta();
+  }));
+}
+
+async function comprimir(file) {
+  if (!file.type.startsWith("image/") || file.size < 1.2 * 1048576 || /heic|heif/i.test(file.type)) return file;
+  try {
+    const bmp = await createImageBitmap(file);
+    const max = 2200, esc = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const cv = document.createElement("canvas");
+    cv.width = Math.round(bmp.width * esc); cv.height = Math.round(bmp.height * esc);
+    cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
+    const blob = await new Promise((r) => cv.toBlob(r, "image/jpeg", 0.85));
+    if (!blob || blob.size >= file.size) return file;
+    return new File([blob], file.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" });
+  } catch { return file; }
+}
+async function enviar(lista) {
+  if (!lista.length) return;
+  toast(`Enviando ${lista.length} arquivo${lista.length > 1 ? "s" : ""}…`);
+  let ok = 0;
+  for (const orig of lista) {
+    const f = await comprimir(orig);
+    let mime = f.type || (/\.pdf$/i.test(f.name) ? "application/pdf" : "");
+    if (!mime) { toast(`Tipo não suportado: ${f.name}`, true); continue; }
+    if (f.size > 50 * 1048576) { toast(`${f.name} passa de 50 MB.`, true); continue; }
+    const nome = f.name && f.name !== "image.jpg" ? f.name : `Foto ${new Date().toLocaleString("pt-BR").replace(/[/:]/g, "-")}.jpg`;
+    const seguro = nome.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\w.-]+/g, "_").slice(-80);
+    const path = `${user.id}/${crypto.randomUUID()}-${seguro}`;
+    const { error } = await sb.storage.from("redacao").upload(path, f, { contentType: mime });
+    if (error) { toast("Erro ao enviar " + nome + ": " + error.message, true); continue; }
+    const { data } = await sb.from("red_arquivos").insert({ pasta_id: pastaId || null, nome, caminho: path, mime, tamanho: f.size }).select().single();
+    if (data) { selecionados.add(data.id); ok++; }
+  }
+  await carregarPasta();
+  if (ok) toast(`${ok} arquivo${ok > 1 ? "s" : ""} pronto${ok > 1 ? "s" : ""} para a IA ler.`);
+}
+$("inCamera").onchange = (e) => { enviar([...e.target.files]); e.target.value = ""; };
+$("inArquivos").onchange = (e) => { enviar([...e.target.files]); e.target.value = ""; };
+
+/* ---------- gerar ---------- */
+function destinatario() { return (tipo.startsWith("oficio") ? $("destinatario") : $("destinatario2")).value.trim(); }
+function mostrarTexto(t, meta = "") {
+  $("texto").value = t || ""; autoAltura();
+  $("vazioDoc").classList.toggle("hide", !!t);
+  $("barraCopiar").classList.toggle("hide", !t);
+  $("meta").textContent = meta;
+}
+function autoAltura() { const ta = $("texto"); ta.style.height = "auto"; ta.style.height = Math.max(ta.scrollHeight, 300) + "px"; }
+$("texto").addEventListener("input", () => { autoAltura(); $("vazioDoc").classList.toggle("hide", !!$("texto").value); $("barraCopiar").classList.toggle("hide", !$("texto").value); });
+$("texto").addEventListener("blur", async () => {
+  if (atual?.id && $("texto").value !== atual.resultado) {
+    atual.resultado = $("texto").value;
+    await sb.from("red_textos").update({ resultado: atual.resultado }).eq("id", atual.id);
+  }
+});
+
+async function chamarIA(corpo) {
+  $("carregando").classList.remove("hide");
+  $("carregandoTxt").textContent = corpo.arquivo_ids.length ? "Lendo os anexos e escrevendo…" : "Escrevendo…";
+  $("gerar").disabled = true;
+  try {
+    const { data, error } = await sb.functions.invoke("gerar-texto", { body: corpo });
+    if (error) {
+      let m = error.message;
+      try { const j = await error.context.json(); m = j.erro || m; } catch {}
+      throw new Error(m);
+    }
+    if (data?.erro) throw new Error(data.erro);
+    return data;
+  } finally {
+    $("carregando").classList.add("hide"); $("gerar").disabled = false;
+  }
+}
+
+$("gerar").onclick = async () => {
+  const pedido = $("pedido").value.trim();
+  if (!pedido && !selecionados.size) { toast("Escreva o que precisa dizer ou marque um anexo.", true); $("pedido").focus(); return; }
+  const corpo = {
+    tipo, qualidade, pasta_id: pastaId || null, destinatario: destinatario(),
+    numero: tipo.startsWith("oficio") ? `${$("numero").value.trim()}/${new Date().getFullYear()}` : null,
+    pedido: pedido || "Leia os anexos e escreva o texto adequado sobre eles.", arquivo_ids: [...selecionados],
+  };
+  try {
+    const r = await chamarIA(corpo);
+    const reg = {
+      pasta_id: corpo.pasta_id, tipo, numero: corpo.numero, destinatario: corpo.destinatario,
+      titulo: r.titulo || pedido.slice(0, 60), pedido: corpo.pedido, resultado: r.texto, arquivo_ids: corpo.arquivo_ids, modelo_ia: r.modelo,
+    };
+    const { data } = await sb.from("red_textos").insert(reg).select().single();
+    atual = data || reg;
+    if (tipo.startsWith("oficio")) {
+      const n = parseInt($("numero").value, 10);
+      if (n) {
+        await sb.rpc("red_usar_numero", { p_tipo: tipo, p_numero: n });
+        if (tipo === "oficio_interno") cfg.prox_oficio_interno = Math.max(cfg.prox_oficio_interno, n + 1);
+        else cfg.prox_oficio_externo = Math.max(cfg.prox_oficio_externo, n + 1);
+        $("numero").value = tipo === "oficio_interno" ? cfg.prox_oficio_interno : cfg.prox_oficio_externo;
+      }
+    }
+    mostrarTexto(r.texto, rotuloModelo(r.modelo));
+    await carregarPasta();
+    if (innerWidth <= 820) $("doc").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (e) { toast(e.message, true); }
+};
+function rotuloModelo(m) { return m ? (/lite/.test(m) ? "Rápido" : "Caprichado") + " · " + m : ""; }
+
+/* ---------- ajustar ---------- */
+function alternarAjuste() { $("ajuste").classList.toggle("hide"); if (!$("ajuste").classList.contains("hide")) $("ajusteTxt").focus(); }
+$("mostrarAjuste").onclick = alternarAjuste;
+$("ajustar2").onclick = () => { $("ajuste").classList.remove("hide"); $("ajuste").scrollIntoView({ behavior: "smooth", block: "center" }); };
+document.querySelectorAll("#ajuste .chip").forEach((c) => (c.onclick = () => ajustar(c.dataset.a)));
+$("aplicarAjuste").onclick = () => ajustar($("ajusteTxt").value.trim());
+$("ajusteTxt").addEventListener("keydown", (e) => { if (e.key === "Enter") ajustar($("ajusteTxt").value.trim()); });
+async function ajustar(instrucao) {
+  const anterior = $("texto").value.trim();
+  if (!anterior) { toast("Gere um texto primeiro.", true); return; }
+  if (!instrucao) { $("ajusteTxt").focus(); return; }
+  const t = atual?.tipo || tipo;
+  try {
+    const r = await chamarIA({
+      tipo: t, qualidade, pasta_id: pastaId || null, destinatario: atual?.destinatario || destinatario(), numero: atual?.numero,
+      pedido: atual?.pedido || $("pedido").value, arquivo_ids: atual?.arquivo_ids?.length ? atual.arquivo_ids : [...selecionados],
+      texto_anterior: anterior, ajuste: instrucao,
+    });
+    mostrarTexto(r.texto, rotuloModelo(r.modelo));
+    $("ajusteTxt").value = "";
+    if (atual?.id) { atual.resultado = r.texto; await sb.from("red_textos").update({ resultado: r.texto }).eq("id", atual.id); await carregarPasta(); }
+    toast("Ajustado.");
+  } catch (e) { toast(e.message, true); }
+}
+
+/* ---------- copiar ---------- */
+async function copiarTexto(txt, botao) {
+  if (!txt) { toast("Nada para copiar ainda.", true); return; }
+  let ok = false;
+  try { await navigator.clipboard.writeText(txt); ok = true; } catch {
+    const ta = document.createElement("textarea"); ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select(); ok = document.execCommand("copy"); ta.remove();
+  }
+  if (!ok) { toast("Não consegui copiar. Selecione o texto e copie manualmente.", true); return; }
+  toast("Texto copiado. É só colar.");
+  if (botao) { const o = botao.textContent; botao.textContent = "Copiado ✓"; botao.classList.add("feito"); setTimeout(() => { botao.textContent = o; botao.classList.remove("feito"); }, 1600); }
+}
+$("copiar").onclick = () => copiarTexto($("texto").value, $("copiar"));
+$("copiar2").onclick = () => copiarTexto($("texto").value, $("copiar2"));
+
+function novo() {
+  atual = null; mostrarTexto(""); $("pedido").value = ""; $("destinatario").value = ""; $("destinatario2").value = "";
+  $("ajuste").classList.add("hide"); renderTipo(); renderHistorico();
+}
+$("novo").onclick = () => { novo(); $("pedido").focus(); };
+
+/* ---------- histórico ---------- */
+function renderHistorico() {
+  $("histCont").textContent = textos.length ? textos.length : "";
+  $("historico").innerHTML = textos.length
+    ? textos.map((t) => `<div class="hi ${atual?.id === t.id ? "on" : ""}" data-id="${t.id}">
+        <div class="tt"><div>${esc(t.titulo || t.pedido?.slice(0, 60) || "Texto")}</div><div>${dataCurta(t.created_at)}${t.destinatario ? " · " + esc(t.destinatario) : ""}</div></div>
+        <span class="tag">${NOMES[t.tipo] || t.tipo}</span><button class="cp" data-cp="${t.id}">Copiar</button></div>`).join("")
+    : `<div class="vazio" style="padding:8px 10px">Os textos que você gerar nesta pasta ficam guardados aqui.</div>`;
+  $("historico").querySelectorAll(".hi").forEach((el) => (el.onclick = (e) => {
+    const t = textos.find((x) => x.id === el.dataset.id);
+    if (e.target.dataset.cp) { copiarTexto(t.resultado); return; }
+    atual = t; mostrarTexto(t.resultado, `${NOMES[t.tipo]} · ${new Date(t.created_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}`);
+    renderHistorico();
+    $("doc").scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+}
+
+/* ---------- pastas ---------- */
+let editandoPasta = null;
+function abrirNovaPasta(dentroDe = pastaId, editar = null) {
+  editandoPasta = editar;
+  $("novaTitulo").firstChild.textContent = editar ? "Renomear pasta " : "Nova pasta ";
+  $("nSalvar").textContent = editar ? "Salvar" : "Criar";
+  $("nDentroBox").classList.toggle("hide", !!editar);
+  $("nNome").value = editar ? editar.nome : "";
+  $("nDentro").innerHTML = '<option value="">(nenhuma — pasta principal)</option>' +
+    arvoreOrdenada().map((p) => `<option value="${p.id}">${" ".repeat(p.nivel)}${esc(p.nome)}</option>`).join("");
+  $("nDentro").value = dentroDe || "";
+  abrir("mNova"); setTimeout(() => $("nNome").focus(), 50);
+}
+$("novaPastaLink").onclick = () => abrirNovaPasta();
+$("pNova").onclick = () => abrirNovaPasta("");
+$("nNome").addEventListener("keydown", (e) => { if (e.key === "Enter") $("nSalvar").click(); });
+$("nSalvar").onclick = async () => {
+  const nome = $("nNome").value.trim(); if (!nome) return;
+  if (editandoPasta) {
+    await sb.from("red_pastas").update({ nome }).eq("id", editandoPasta.id);
+  } else {
+    const { data, error } = await sb.from("red_pastas").insert({ nome, parent_id: $("nDentro").value || null }).select().single();
+    if (error) { toast(error.message, true); return; }
+    pastaId = data.id; ls.set("red_pasta", pastaId);
+  }
+  fechar("mNova"); await carregarPastas(); renderArvore(); novo(); await carregarPasta();
+};
+function renderArvore() {
+  const lista = arvoreOrdenada();
+  $("arvore").innerHTML = lista.length ? lista.map((p) => `<div class="pi" style="padding-left:${4 + p.nivel * 18}px">
+      <span class="n">${p.nivel ? "› " : ""}${esc(p.nome)}</span>
+      <button data-sub="${p.id}">+ subpasta</button><button data-ren="${p.id}">Renomear</button><button data-exc="${p.id}">Excluir</button></div>`).join("")
+    : `<div class="vazio">Nenhuma pasta ainda.</div>`;
+  $("arvore").querySelectorAll("[data-sub]").forEach((b) => (b.onclick = () => abrirNovaPasta(b.dataset.sub)));
+  $("arvore").querySelectorAll("[data-ren]").forEach((b) => (b.onclick = () => abrirNovaPasta("", pastas.find((p) => p.id === b.dataset.ren))));
+  $("arvore").querySelectorAll("[data-exc]").forEach((b) => (b.onclick = async () => {
+    const p = pastas.find((x) => x.id === b.dataset.exc);
+    if (!confirm(`Excluir a pasta "${caminho(p.id)}", as subpastas e os arquivos dela? Os textos já gerados continuam no histórico "Sem pasta".`)) return;
+    const ids = [p.id]; for (let i = 0; i < ids.length; i++) pastas.filter((x) => x.parent_id === ids[i]).forEach((x) => ids.push(x.id));
+    const { data: arqs } = await sb.from("red_arquivos").select("caminho").in("pasta_id", ids);
+    if (arqs?.length) await sb.storage.from("redacao").remove(arqs.map((a) => a.caminho));
+    await sb.from("red_pastas").delete().eq("id", p.id);
+    if (ids.includes(pastaId)) { pastaId = ""; ls.set("red_pasta", ""); }
+    await carregarPastas(); renderArvore(); await carregarPasta();
+  }));
+}
+$("bPastas").onclick = () => { renderArvore(); abrir("mPastas"); };
+
+/* ---------- modelos ---------- */
+let abaModelo = "dados";
+function renderAba() {
+  document.querySelectorAll("#tabsModelos button").forEach((b) => b.classList.toggle("on", b.dataset.m === abaModelo));
+  $("painelDados").classList.toggle("hide", abaModelo !== "dados");
+  $("painelModelo").classList.toggle("hide", abaModelo === "dados");
+  if (abaModelo === "dados") document.querySelectorAll("#painelDados [data-c]").forEach((i) => (i.value = cfg[i.dataset.c] ?? ""));
+  else { const m = modelos[abaModelo] || {}; $("mInstr").value = m.instrucoes ?? PADRAO[abaModelo]; $("mExemplo").value = m.exemplo ?? ""; }
+  $("mOk").textContent = "";
+}
+document.querySelectorAll("#tabsModelos button").forEach((b) => (b.onclick = async () => { await salvarAba(true); abaModelo = b.dataset.m; renderAba(); }));
+async function salvarAba(silencioso = false) {
+  if (abaModelo === "dados") {
+    const novo = {};
+    document.querySelectorAll("#painelDados [data-c]").forEach((i) => {
+      const k = i.dataset.c; novo[k] = k.startsWith("prox_") ? Math.max(1, parseInt(i.value, 10) || 1) : i.value.trim();
+    });
+    if (Object.keys(novo).some((k) => String(novo[k]) !== String(cfg[k] ?? ""))) {
+      const { error } = await sb.from("red_config").update(novo).eq("owner", user.id);
+      if (error) { toast(error.message, true); return; }
+      Object.assign(cfg, novo); renderTipo();
+    }
+  } else {
+    const reg = { tipo: abaModelo, instrucoes: $("mInstr").value, exemplo: $("mExemplo").value };
+    const m = modelos[abaModelo] || {};
+    if (reg.instrucoes !== m.instrucoes || reg.exemplo !== m.exemplo) {
+      const { data, error } = await sb.from("red_modelos").upsert({ owner: user.id, ...reg }).select().single();
+      if (error) { toast(error.message, true); return; }
+      modelos[abaModelo] = data;
+    }
+  }
+  if (!silencioso) $("mOk").textContent = "Salvo ✓";
+}
+$("mSalvar").onclick = () => salvarAba();
+$("restaurar").onclick = () => { $("mInstr").value = PADRAO[abaModelo]; };
+$("bModelos").onclick = () => { abaModelo = "dados"; renderAba(); abrir("mModelos"); };
+
+/* ---------- início ---------- */
+const { data: { session } } = await sb.auth.getSession();
+if (session) iniciar(session); else $("telaLogin").classList.remove("hide");
+sb.auth.onAuthStateChange((ev, s) => { if (ev === "SIGNED_IN" && s && !user) iniciar(s); });
+</script>
+</body>
+</html>
